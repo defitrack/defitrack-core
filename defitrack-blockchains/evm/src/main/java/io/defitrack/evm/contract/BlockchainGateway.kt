@@ -279,6 +279,10 @@ open class BlockchainGateway(
             return Address(this)
         }
 
+        fun String.toBytes32(): Bytes32 {
+            return Bytes32(Hex.decodeHex(this.removePrefix("0x")))
+        }
+
         fun Boolean.toBool(): Bool {
             return Bool(this)
         }

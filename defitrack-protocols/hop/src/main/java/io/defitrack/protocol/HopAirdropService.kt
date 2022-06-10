@@ -13,6 +13,7 @@ class HopAirdropService(private val httpClient: HttpClient) {
 
     val baseUrl = "https://raw.githubusercontent.com/defitrack/data/master/protocols/hop/airdrops/"
 
+
     val cache = Cache.Builder().build<String, List<HopAirdrop>>()
 
     suspend fun getAirdrop(address: String): HopAirdrop? {
@@ -23,7 +24,10 @@ class HopAirdropService(private val httpClient: HttpClient) {
             JsonParser.parseString(asString).asJsonObject["entries"].asJsonObject.entrySet().map {
                 HopAirdrop(
                     it.key,
-                    it.value.asJsonObject["balance"].asBigInteger
+                    it.value.asJsonObject["balance"].asBigInteger,
+                    JsonParser.parseString(asString).asJsonObject["proof"].asJsonArray.map { proof ->
+                        proof.asString
+                    }
                 )
             }
         }
@@ -38,6 +42,7 @@ class HopAirdropService(private val httpClient: HttpClient) {
 
     class HopAirdrop(
         val address: String,
-        val balance: BigInteger
+        val balance: BigInteger,
+        val merkleProof: List<String>
     )
 }

@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component
 @Component
 class HopAirdropClaimableService(
     private val erC20Resource: ERC20Resource,
-    private val airdropService: HopAirdropService
+    private val airdropService: HopAirdropService,
+    private val hopAirdropTransactionBuilder: HopAirdropTransactionBuilder
 ) : ClaimableService {
     val hopTokenAddress = "0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc"
 
@@ -31,7 +32,7 @@ class HopAirdropClaimableService(
                     network = getNetwork(),
                     claimableToken = hopToken.toFungibleToken(),
                     amount = it.balance,
-                    emptyList()
+                    claimTransaction = hopAirdropTransactionBuilder.buildTransactions(it)
                 )
             )
         } ?: emptyList()
