@@ -2,7 +2,7 @@ package io.defitrack.protocol.claimable
 
 import io.defitrack.abi.ABIResource
 import io.defitrack.common.network.Network
-import io.defitrack.evm.contract.ContractAccessorGateway
+import io.defitrack.evm.contract.BlockchainGatewayProvider
 import io.defitrack.protocol.HopAirdropService
 import io.defitrack.protocol.contract.HopTokenContract
 import io.defitrack.transaction.PreparedTransaction
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class HopAirdropTransactionBuilder(
-    gateway: ContractAccessorGateway,
+    gateway: BlockchainGatewayProvider,
     abiResource: ABIResource
 ) {
 

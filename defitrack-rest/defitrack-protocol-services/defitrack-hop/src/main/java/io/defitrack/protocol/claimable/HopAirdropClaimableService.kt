@@ -4,7 +4,7 @@ import io.defitrack.abi.ABIResource
 import io.defitrack.claimable.Claimable
 import io.defitrack.claimable.ClaimableService
 import io.defitrack.common.network.Network
-import io.defitrack.evm.contract.ContractAccessorGateway
+import io.defitrack.evm.contract.BlockchainGatewayProvider
 import io.defitrack.merkle.MerkleProofHelperService
 import io.defitrack.protocol.HopAirdropService
 import io.defitrack.protocol.Protocol
@@ -17,7 +17,7 @@ class HopAirdropClaimableService(
     private val erC20Resource: ERC20Resource,
     private val airdropService: HopAirdropService,
     private val hopAirdropTransactionBuilder: HopAirdropTransactionBuilder,
-    private val accessorGateway: ContractAccessorGateway,
+    private val blockchainGatewayProvider: BlockchainGatewayProvider,
     private val merkleProofHelperService: MerkleProofHelperService,
     private val abiResource: ABIResource
 ) : ClaimableService {
@@ -29,7 +29,7 @@ class HopAirdropClaimableService(
 
     val hopTokenContract by lazy {
         HopTokenContract(
-            accessorGateway.getGateway(getNetwork()),
+            blockchainGatewayProvider.getGateway(getNetwork()),
             abiResource.getABI("hop/hopToken.json"),
             hopTokenAddress
         )
@@ -37,7 +37,7 @@ class HopAirdropClaimableService(
 
     val merkleVerificationContract by lazy {
         MerkleProofHelperContract(
-            accessorGateway.getGateway(Network.POLYGON),
+            blockchainGatewayProvider.getGateway(Network.POLYGON),
             abiResource.getABI("defitrack/merkle/MerkleProofHelper.json"),
             merkleProofHelperService.getHelperAddress()
         )
