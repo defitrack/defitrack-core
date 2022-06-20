@@ -5,8 +5,7 @@ import io.defitrack.erc20.protocolspecific.BalancerTokenService
 import io.defitrack.erc20.protocolspecific.HopTokenService
 import io.defitrack.logo.LogoService
 import io.defitrack.nativetoken.NativeTokenService
-import io.defitrack.pool.LPtokenService
-import io.defitrack.pool.contract.LPTokenContract
+import io.defitrack.market.pooling.contract.LPTokenContract
 import io.defitrack.protocol.Protocol
 import io.defitrack.token.TokenInformation
 import io.defitrack.token.TokenType
@@ -109,7 +108,7 @@ class TokenService(
                     fromLP(Protocol.SPIRITSWAP, network, token)
                 }
                 isKyberDMMLP(token.symbol) -> {
-                    fromLP(Protocol.DMM, network, token)
+                    fromLP(Protocol.KYBER_SWAP, network, token)
                 }
                 isBalancerLp(token.address, network) -> {
                     balancerTokenService.getTokenInformation(token.address, network)

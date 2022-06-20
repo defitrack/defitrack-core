@@ -3,9 +3,9 @@ package io.defitrack.protocol.aave.v3.lending.market
 import io.defitrack.abi.ABIResource
 import io.defitrack.common.network.Network
 import io.defitrack.common.utils.FormatUtilsExtensions.asEth
-import io.defitrack.evm.contract.ContractAccessorGateway
-import io.defitrack.lending.LendingMarketService
-import io.defitrack.lending.domain.LendingMarket
+import io.defitrack.evm.contract.BlockchainGatewayProvider
+import io.defitrack.market.lending.LendingMarketService
+import io.defitrack.market.lending.domain.LendingMarket
 import io.defitrack.price.PriceRequest
 import io.defitrack.price.PriceResource
 import io.defitrack.protocol.Protocol
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class AaveV3OptimismLendingMarketProvider(
-    contractAccessorGateway: ContractAccessorGateway,
+    blockchainGatewayProvider: BlockchainGatewayProvider,
     private val abiResource: ABIResource,
     private val erC20Resource: ERC20Resource,
     private val aaveV3OptimismDataProvider: AaveV3OptimismDataProvider,
@@ -26,13 +26,13 @@ class AaveV3OptimismLendingMarketProvider(
 ) : LendingMarketService() {
 
     val pool = PoolContract(
-        contractAccessorGateway.getGateway(getNetwork()),
+        blockchainGatewayProvider.getGateway(getNetwork()),
         abiResource.getABI("aave/v3/Pool.json"),
         aaveV3OptimismDataProvider.getPoolAddress()
     )
 
     val poolDataProvider = PoolDataProvider(
-        contractAccessorGateway.getGateway(getNetwork()),
+        blockchainGatewayProvider.getGateway(getNetwork()),
         abiResource.getABI("aave/v3/AaveProtocolDataProvider.json"),
         aaveV3OptimismDataProvider.getPoolDataProvider()
     )

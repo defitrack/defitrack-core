@@ -3,16 +3,15 @@ package io.defitrack.protocol
 import io.defitrack.abi.ABIResource
 import io.defitrack.common.network.Network
 import io.defitrack.evm.contract.BlockchainGateway
-import io.defitrack.evm.contract.ContractAccessorGateway
-import io.defitrack.pool.PoolingMarketService
-import io.defitrack.pool.domain.PoolingMarketElement
+import io.defitrack.evm.contract.BlockchainGatewayProvider
+import io.defitrack.market.pooling.PoolingMarketProvider
+import io.defitrack.market.pooling.domain.PoolingMarketElement
 import io.defitrack.price.PriceRequest
 import io.defitrack.price.PriceResource
 import io.defitrack.protocol.contract.HopLpTokenContract
 import io.defitrack.protocol.contract.HopSwapContract
 import io.defitrack.protocol.domain.HopLpToken
 import io.defitrack.token.ERC20Resource
-import io.defitrack.token.MarketSizeService
 import io.defitrack.token.TokenType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -25,15 +24,15 @@ import java.math.BigDecimal
 class HopPolygonPoolingMarketService(
     private val hopService: HopService,
     private val hopAPRService: HopAPRService,
-    private val contractAccessorGateway: ContractAccessorGateway,
+    private val blockchainGatewayProvider: BlockchainGatewayProvider,
     private val abiResource: ABIResource,
     private val priceResource: PriceResource,
     private val erC20Resource: ERC20Resource,
-) : PoolingMarketService() {
+) : PoolingMarketProvider() {
 
 
     override suspend fun fetchPoolingMarkets(): List<PoolingMarketElement> = coroutineScope {
-        val gateway = contractAccessorGateway.getGateway(getNetwork())
+        val gateway = blockchainGatewayProvider.getGateway(getNetwork())
 
         hopService.getLps(getNetwork()).map { hopLpToken ->
             async(Dispatchers.IO.limitedParallelism(10)) {

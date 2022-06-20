@@ -2,11 +2,11 @@ package io.defitrack.protocol.idex
 
 import io.defitrack.abi.ABIResource
 import io.defitrack.common.network.Network
-import io.defitrack.evm.contract.ContractAccessorGateway
+import io.defitrack.evm.contract.BlockchainGatewayProvider
 import io.defitrack.protocol.Protocol
-import io.defitrack.staking.StakingMarketService
-import io.defitrack.staking.domain.StakingMarketBalanceFetcher
-import io.defitrack.staking.domain.StakingMarket
+import io.defitrack.market.farming.FarmingMarketService
+import io.defitrack.market.farming.domain.FarmingPositionFetcher
+import io.defitrack.market.farming.domain.FarmingMarket
 import io.defitrack.token.ERC20Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -18,19 +18,19 @@ import org.springframework.stereotype.Component
 class IdexFarmingMarketService(
     private val abiResource: ABIResource,
     private val tokenService: ERC20Resource,
-    private val contractAccessorGateway: ContractAccessorGateway,
+    private val blockchainGatewayProvider: BlockchainGatewayProvider,
     private val idexService: IdexService
-) : StakingMarketService() {
+) : FarmingMarketService() {
 
 
     val minichefABI by lazy {
         abiResource.getABI("idex/IdexFarm.json")
     }
 
-    override suspend fun fetchStakingMarkets(): List<StakingMarket> = coroutineScope {
+    override suspend fun fetchStakingMarkets(): List<FarmingMarket> = coroutineScope {
         idexService.idexFarm().map {
             IdexFarmContract(
-                contractAccessorGateway.getGateway(getNetwork()),
+                blockchainGatewayProvider.getGateway(getNetwork()),
                 minichefABI,
                 it
             )
@@ -59,11 +59,11 @@ class IdexFarmingMarketService(
     private fun toStakingMarketElement(
         chef: IdexFarmContract,
         poolId: Int
-    ): StakingMarket {
+    ): FarmingMarket {
         val stakedtoken =
             tokenService.getTokenInformation(getNetwork(), chef.getLpTokenForPoolId(poolId))
         val rewardToken = tokenService.getTokenInformation(getNetwork(), chef.rewardToken)
-        return StakingMarket(
+        return FarmingMarket(
             id = "idex-${chef.address}-${poolId}",
             network = getNetwork(),
             name = stakedtoken.name + " Farm",
@@ -74,7 +74,7 @@ class IdexFarmingMarketService(
             ),
             contractAddress = chef.address,
             vaultType = "idex-farm",
-            balanceFetcher = StakingMarketBalanceFetcher(
+            balanceFetcher = FarmingPositionFetcher(
                 chef.address,
                 { user -> chef.userInfoFunction(poolId, user) }
             )

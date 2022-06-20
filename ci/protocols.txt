@@ -2,6 +2,7 @@ aave
 adamant
 apeswap
 balancer
+bancor
 beefy
 compound
 convex
@@ -9,10 +10,11 @@ curve
 dfyn
 dinoswap
 dodo
-dmm
+kyberswap
 hop
 humandao
 idex
+makerdao
 mstable
 polycat
 polygon-protocol
